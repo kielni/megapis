@@ -1,0 +1,32 @@
+{
+  "name": "megapis-mandrill-email",
+  "version": "0.0.1",
+  "description": "Worker to send email",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kielni/megapis"
+  },
+  "keywords": [
+    "megapis",
+    "agent",
+    "email",
+    "mandrill"
+  ],
+  "author": "Kimberly Nicholls",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kielni/megapis/issues"
+  },
+  "homepage": "https://github.com/kielni/megapis",
+  "dependencies": {
+    "handlebars": "^2.0.0",
+    "lodash": "^3.0.1",
+    "log4js": "^0.6.22",
+    "mandrill-api": "^1.0.41",
+    "megapis-worker-util": "^0.0.1"
+  }
+}

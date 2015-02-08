@@ -1,0 +1,17 @@
+{
+  "name": "megapis-low-tide",
+  "version": "1.0.0",
+  "description": "Put weekend low tides between 10a-5p on a Google calendar ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kimberly Nicholls",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^0.18.0",
+    "log4js": "^0.6.22",
+    "megapis-worker-util": "^0.0.1",
+    "request": "^2.53.0"
+  }
+}
