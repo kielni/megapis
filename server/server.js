@@ -14,7 +14,7 @@ var CronJob = require("cron").CronJob,
 var config = megapisUtil.loadGlobalConfig("config/global.json");
 var requiredConfigKeys = ["workers", "redis.port", "redis.host"];
 
-if (!megapisUtil.validateWorkerConfig(config, requiredConfigKeys)) {
+if (!megapisUtil.validateConfig(config, requiredConfigKeys)) {
     process.exit(1);
 }
 
