@@ -43,9 +43,7 @@ function getWorkerConfig(workerConfigFilename) {
 module.exports.getWorkerConfig = getWorkerConfig;
 
 module.exports.runWorker = function(worker) {
-    log.info("running worker "+worker.name+" with config "+worker.config);
     workerConfig = getWorkerConfig(worker.config);
-    log.info("config=", workerConfig);
     var w = require(worker.module);
     if (w.requiredConfigKeys && !validateConfig(workerConfig, w.requiredConfigKeys)) {
         return;
