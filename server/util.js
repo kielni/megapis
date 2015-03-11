@@ -30,20 +30,16 @@ function validateConfig(config, requiredKeys) {
 
 module.exports.validateConfig = validateConfig;
 
-function getWorkerConfig(workerConfigFilename) {
-    var workerConfig = {};
-    if (workerConfigFilename) {
-        workerConfig = _.assign(globalConfig, jf.readFileSync(workerConfigFilename, "utf-8"));
-    } else {
-        workerConfig = globalConfig;
-    }
-    return workerConfig;
+function getWorkerConfig(worker) {
+    var config = _.assign(globalConfig, jf.readFileSync("config/"+worker.id+".json", "utf-8"));
+    config.id = worker.id;
+    return config;
 }
 
 module.exports.getWorkerConfig = getWorkerConfig;
 
 module.exports.runWorker = function(worker) {
-    workerConfig = getWorkerConfig(worker.config);
+    workerConfig = getWorkerConfig(worker);
     var w = require(worker.module);
     if (w.requiredConfigKeys && !validateConfig(workerConfig, w.requiredConfigKeys)) {
         return;

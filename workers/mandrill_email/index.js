@@ -6,8 +6,7 @@ var mandrill = require("mandrill-api/mandrill"),
     _ = require("lodash"),
     workerUtil = require("megapis-worker-util");
 
-module.exports.requiredConfigKeys = ["sourceTemplates.default", "template", "mandrill.apiKey",
-    "message" ];
+module.exports.requiredConfigKeys = ["message", "mandrill.apiKey"];
 
 function makeMessage(config, values) {
     // group values by source
@@ -22,20 +21,31 @@ function makeMessage(config, values) {
     var html = [];
     // render each set of values with a custom template if available
     _.each(_.keys(grouped), function(source) {
-        var filename = config.sourceTemplates[source] || config.sourceTemplates.default;
-        log.info("loading "+filename+" template for "+source+" messages");
+        var filename = "config/"+config.id+"_"+source+".hbs";
+        log.debug("looking for template "+filename+" for "+source+" messages");
+        if (!fs.existsSync(filename)) {
+            log.debug("template not found; using default");
+            filename = "config/email_default.hbs";
+        }
         var template = handlebars.compile(fs.readFileSync(filename, "utf-8"));
         var sourceHtml = "";
         // template should render a single value
         _.each(grouped[source], function(value) {
             sourceHtml += template(value);
         });
-        html.push({"source": source, "html": sourceHtml });
+
+        html.push({
+            "source": source,
+            "name": workerUtil.getWorkerName(config, source),
+            "html": sourceHtml.trim() 
+        });
     });
     if (html.length === 0) {
         return null;
     }
-    var template = handlebars.compile(fs.readFileSync(config.template, "utf-8"));
+    var messageTemplate = "config/"+config.id+".hbs";
+    log.debug("generating message with "+messageTemplate);
+    var template = handlebars.compile(fs.readFileSync(messageTemplate, "utf-8"));
     return template({"sources": html});
 }
 
@@ -59,15 +69,15 @@ function sendMessage(config, html) {
 
 module.exports.run = function(config) {
     var client = workerUtil.store.createClient(config);
-    var emailKey = config.storageKeys.self;
-    client.get(emailKey, function(err, values) {
+    log.info("getting values for "+config.id);
+    client.get(config.id, function(err, values) {
         var message = makeMessage(config, values);
         if (message) {
             sendMessage(config, message);
         } else {
             log.info("nothing to send");
         }
-        client.del(emailKey, function(err, replies) {
+        client.del(config.id, function(err, replies) {
             client.quit();
         });
     });

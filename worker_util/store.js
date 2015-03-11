@@ -57,22 +57,19 @@ exports.get = function(key, callback) {
     back up current value of key, then save values as a set
     values is a JSON list
 */
-exports.save = function(key, values, source, callback) {
+exports.save = function(key, values, callback) {
     client.rename(key, getPreviousKey(key), function(err, replies) {});
-    this.add(key, values, source, callback);
+    this.add(key, values, callback);
 };
 
 /*
     convert each item in JSON list values to a string and add to 
     a set
 */
-exports.add = function(key, values, source, callback) {
+exports.add = function(key, values, callback) {
     // add each value to set
     var multi = client.multi();
     _.each(values, function(v) {
-        if (source) {
-            v.source = source;
-        }
         //log.debug("adding to key "+key, v);
         multi.sadd(key, JSON.stringify(v));
     });
@@ -100,9 +97,11 @@ exports.del = function(key, callback) {
     get difference between current and previous members of key set as JSON
 */
 exports.getDiffJson = function(key, callback) {
+    log.debug("get diff: key="+key+" prev="+getPreviousKey(key));
     client.sdiff(key, getPreviousKey(key), function(err, replies) {
         var values = [];
         if (replies) {
+            log.debug(replies.length+" different values");
             values = _.map(replies, function(s) {
                 return JSON.parse(s);
             });

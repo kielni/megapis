@@ -6,13 +6,22 @@ var log4js = require("log4js"),
     _ = require("lodash"),
     async = require("async");
 
-module.exports.requiredConfigKeys = ["urls", "storageKeys.self", "storageKeys.output"];
+module.exports.requiredConfigKeys = ["urls", "output"];
 
 module.exports.run = function(config) {
     var byId = {};
     var movies = [];
     async.forEach(config.urls, function(url, callback) {
-        request(url, function(err, response, body) {
+        var req = {
+            url: url,
+            headers: {
+                "User-Agent": "curl/7.32.0",
+                "Accept": "*/*"
+            }
+        };
+        // "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36"
+
+        request(req, function(err, response, body) {
             if (err) throw err;
             var $ = cheerio.load(body);
             // get movie thumbnails
@@ -29,32 +38,55 @@ module.exports.run = function(config) {
             callback();
         });
     }, function(err) {
-        log.info("got "+_.keys(byId).length+" movies");
-        async.forEach(_.values(byId), function(movie, callback) {
-            // get synopsis from detail pageink
+        var total = _.keys(byId).length;
+        var i = 0;
+        log.info("got "+total+" movies");
+        async.forEach(_.values(byId).slice(0,1), function(movie, callback) {
+            // get synopsis from detail page
             request(movie.url, function(err, response, body) {
                 if (err) throw err;
+                log.info(movie.url+"\n"+body);
                 var $ = cheerio.load(body);
-                var url = $("meta[property='og:url']").attr("content");
-                // get id from url
-                var id = url.match(/product\/(.*?)\//)[1];
+                var ogUrl = $("meta[property='og:url']");
+                var url, id;
+                if (ogUrl && ogUrl.length) {
+                    url = ogUrl.attr("content");
+                    id = url.match(/product\/(.*?)\//)[1];
+                } else {
+                    url = $("link[rel='canonical']").attr("href");
+                    id = url.match(/dp\/(.*?)$/)[1];
+                }
                 // remove request param on end
                 var re = new RegExp("(.*?/"+id+")/.*");
-                url = url.match(re)[1];
+                var match = url.match(re);
+                if (match && match.length > 1) {
+                    url = url.match(re)[1];
+                }
                 var m = byId[id];
                 m.url = url;
+                /*
+                log.debug("head="+$("head").html());
+                log.debug("body="+$("body").html());
+                */
+                log.debug(i+" url="+movie.url);
+                //log.debug($("html").html());
                 m.img = $("meta[property='og:image']").attr("content");
                 m.description = $("meta[property='og:description']").attr("content");
                 m.rating = $("meta[property='og:rating']").attr("content");
                 m.ratingCount = $("meta[property='og:rating_count']").attr("content");
                 movies.push(m);
-                //log.info("m=",m);
+                i++;
+                if (i%10 === 0) {
+                    log.debug("loaded "+i+"/"+total+" movie pages");
+                }
                 callback();
             });
         }, function(err) {
-            workerUtil.saveAndForward(config, movies, config.storageKeys.self,
-                config.storageKeys.output, 'Prime new movies');
-
+            log.info("done, movies=", movies);
+            if (err) {
+                log.error("error: ", err);
+            }
+            workerUtil.saveAndForward(config, movies);
         });
     });
 };

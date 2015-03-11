@@ -1,9 +1,0 @@
-{
-    "urls": [
-        "http://www.amazon.com/s/ref=sr_st_popularity-rank?fst=as%3Aoff&bbn=16272&qid=1423440730&rh=n%3A283155%2Cp_85%3A2470955011%2Cp_n_feature_browse-bin%3A618073011%2Cn%3A!1000%2Cn%3A25%2Cn%3A16272%2Cn%3A16275&sort=popularity-rank",
-        "http://www.amazon.com/s/ref=sr_st_popularity-rank?fst=as%3Aoff&bbn=16272&qid=1423440733&rh=n%3A283155%2Cp_85%3A2470955011%2Cp_n_feature_browse-bin%3A618073011%2Cn%3A!1000%2Cn%3A25%2Cn%3A16272%2Cn%3A16277&sort=popularity-rank"
-    ],
-    "storageKeys": {
-        "output": "primeBooksEmail"
-    }
-}

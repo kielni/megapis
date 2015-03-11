@@ -20,6 +20,5 @@ if (!worker) {
     process.exit(1);
 }
 log.info("running "+id);
-// TODO: run with async
 megapisUtil.runWorker(worker);
 

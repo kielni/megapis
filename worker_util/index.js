@@ -5,17 +5,33 @@ var store = require("./store"),
 
 module.exports.store = store;
 
+module.exports.getWorkerName = function(config, workerId) {
+    var name = workerId;
+    var worker = _.find(config.workers, function(w) {
+        return w.id === workerId;
+    });
+    if (worker) {
+        name = worker.name;
+    }
+    return name;
+};
+
 /*
     save a key, get differences from previous version, and forward to another key
 */
-module.exports.saveAndForward = function(config, values, fromKey, toKey, source) {
+module.exports.saveAndForward = function(config, values) {
     var client = store.createClient(config);
-    client.save(fromKey, values, "Low Tide", function(err, replies) {
-        client.getDiffJson(fromKey, function(err, unseen) {
+    client.save(config.id, values, function(err, replies) {
+        log.debug("saved "+values.length+" values to "+config.id);
+        client.getDiffJson(config.id, function(err, unseen) {
+            log.debug("unseen=", unseen);
+            // add source
+            _.each(unseen, function(value) {
+                value.source = config.id;
+            });
             // send to output key
             if (unseen && unseen.length > 0) {
-                log.info("sending "+unseen.length+" values to "+toKey+" from "+source);
-                client.add(toKey, unseen, source, function(err, replies) {
+                client.add(config.output, unseen, function(err, replies) {
                     log.debug("done add", err, replies);
                     client.quit();
                 });

@@ -23,17 +23,21 @@ if (!megapisUtil.validateConfig(config, ["workers", "redis.port", "redis.host"])
 // validate each task
 var index = 0;
 _.each(config.workers, function(worker) {
-    // worker must have name, module, schedule, and config
+    // worker must have id, name, module, and schedule
     index += 1;
+    if (!hasKey(worker, "id")) {
+        process.exit(1);
+    }
     if (!hasKey(worker, "name")) {
         process.exit(1);
     }
     log.info("validating worker "+worker.name);
-    if (!hasKey(worker, "schedule") || !hasKey(worker, "module") || !hasKey(worker, "config")) {
+    if (!hasKey(worker, "schedule") || !hasKey(worker, "module")) {
         process.exit(1);
     }
     // load config file
-    var workerConfig = megapisUtil.getWorkerConfig(worker.config);
+    log.info("validating worker config "+worker.id+".json");
+    var workerConfig = megapisUtil.getWorkerConfig(worker);
     // load code
     var w = require(worker.module);
     // validate config

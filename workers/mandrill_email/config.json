@@ -1,13 +1,5 @@
 {
     "template": "config/email_weekly.hbs",
-    "sourceTemplates": {
-        "default": "config/email_default.hbs",
-        "Low tide": "config/email_low_tide.hbs",
-        "Prime new movies": "config/email_prime_new_movies.hbs"
-    },
-    "storageKeys": {
-        "self": "weeklyEmail"
-    },
     "message": {
         "subject": "Weekly Megapis Email",
         "from_email": "megapis@mandrillapp.com",

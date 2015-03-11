@@ -6,10 +6,10 @@ var log4js = require("log4js"),
     _ = require("lodash"),
     async = require("async");
 
-module.exports.requiredConfigKeys = ["urls", "storageKeys.output"];
+module.exports.requiredConfigKeys = ["urls", "output"];
 
-var books = [];
 module.exports.run = function(config) {
+    var books = [];
     var byUrl = {};
     async.forEach(config.urls, function(url, callback) {
         request(url, function(err, response, body) {
@@ -28,7 +28,9 @@ module.exports.run = function(config) {
             callback();
         });
     }, function(err) {
-        log.info("got "+_.keys(byUrl).length+" books");
+        var i = 0;
+        var total= _.keys(byUrl).length;
+        log.info("found "+total+" books");
         async.forEach(_.keys(byUrl), function(url, callback) {
             // get synopsis from detail page link
             request(url, function(err, response, body) {
@@ -44,13 +46,17 @@ module.exports.run = function(config) {
                 tag = tag.replace("Amazon.com: ", "");
                 tag = tag.replace(": Kindle Store", "");
                 book.tag = tag;
+                book.source = config.id;
                 books.push(book);
+                i++;
+                if (i%10 === 0) {
+                    log.debug("loaded "+i+"/"+total+" book pages");
+                }
                 callback();
             });
         }, function(err) {
             var client = workerUtil.store.createClient(config);
-            client.add(config.storageKeys.output, books, "Prime books", function(err, replies) {
-                log.debug("done add", err, replies);
+            client.add(config.output, books, function(err, replies) {
                 client.quit();
             });
         });

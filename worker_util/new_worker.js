@@ -19,6 +19,10 @@ if (process.argv.length > 2) {
     path = "";
 }
 path += name.replace(/-/g, "_");
+var workerId = name.replace(/(?:^|[-_])(\w)/g, function (_, c) {
+    return c ? c.toUpperCase () : '';
+});
+
 var gitUrl = process.env.MEGAPIS_GIT_URL || "";
 var author = process.env.MEGAPIS_AUTHOR || "";
 
@@ -30,7 +34,7 @@ function copyFile(name, path) {
 fs.mkdirSync(path);
 console.log("created "+path+" path");
 copyFile("index.js", path);
-copyFile("sample_config.json", path);
+copyFile(workerId+".json", path);
 copyFile("README.md", path);
 // load package.json.hbs, merge with name
 var template = handlebars.compile(fs.readFileSync("blueprints/package.json.hbs", "utf-8"));

@@ -5,8 +5,5 @@
     "http://www.amazon.com/s/ref=sr_nr_p_n_theme_browse-bin_4?rh=n%3A2858778011%2Cn%3A%213147522011%2Cn%3A%213147524011%2Cn%3A7812500011%2Cp_85%3A2470955011%2Cp_n_theme_browse-bin%3A2745870011",
     "http://www.amazon.com/s/ref=sr_nr_p_n_theme_browse-bin_10?rh=n%3A2858778011%2Cn%3A%213147522011%2Cn%3A%213147524011%2Cn%3A7812500011%2Cp_85%3A2470955011%2Cp_n_theme_browse-bin%3A2650376011"
     ],
-    "storageKeys": {
-        "self": "primeNewMovies",
-        "output": "weeklyEmail"
-    }
+    "output": "weeklyEmail"
 }
