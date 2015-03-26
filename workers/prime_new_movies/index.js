@@ -1,16 +1,31 @@
 var log4js = require("log4js"),
     log = log4js.getLogger("megapis-prime-new-movies"),
-    workerUtil = require("megapis-worker-util"),
     request = require("request"), 
     cheerio = require("cheerio"), 
     _ = require("lodash"),
-    async = require("async");
+    async = require("async"),
+    util = require("util");
 
-module.exports.requiredConfigKeys = ["urls", "output"];
+var MegapisWorker = require("megapis-worker").MegapisWorker;
 
-module.exports.run = function(config) {
+function PrimeMoviesWorker(config) {
+    PrimeMoviesWorker.super_.call(this, config);
+}
+ 
+util.inherits(PrimeMoviesWorker, MegapisWorker);
+
+exports.createWorker = function(config) {
+    return new PrimeMoviesWorker(config);
+};
+
+PrimeMoviesWorker.prototype.getConfigKeys = function() {
+    return ["urls", "output"];
+};
+
+PrimeMoviesWorker.prototype.run = function(config) {
     var byId = {};
     var movies = [];
+    var self = this;
     async.forEach(config.urls, function(url, callback) {
         var req = {
             url: url,
@@ -86,7 +101,7 @@ module.exports.run = function(config) {
             if (err) {
                 log.error("error: ", err);
             }
-            workerUtil.saveAndForward(config, movies);
+            self.saveAndForward(movies);
         });
     });
 };

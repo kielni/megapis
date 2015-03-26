@@ -2,12 +2,27 @@ var log4js = require("log4js"),
     log = log4js.getLogger("megapis-low-tide"),
     request = require("request"), 
     cheerio = require("cheerio"), 
-    workerUtil = require("megapis-worker-util");
+    util = require("util");
 
-module.exports.requiredConfigKeys = ["location", "output"];
+var MegapisWorker = require("megapis-worker").MegapisWorker;
 
-module.exports.run = function(config) {
-    var url = "http://www.tide-forecast.com/locations/"+config.location+"/tides/latest";
+function LowTideWorker(config) {
+    LowTideWorker.super_.call(this, config);
+}
+ 
+util.inherits(LowTideWorker, MegapisWorker);
+
+exports.createWorker = function(config) {
+    return new LowTideWorker(config);
+};
+
+LowTideWorker.prototype.getConfigKeys = function() {
+    return ["location", "output"];
+};
+
+LowTideWorker.prototype.run = function() {
+    var url = "http://www.tide-forecast.com/locations/"+this.config.location+"/tides/latest";
+    var self = this;
     request(url, function(err, reponse, body) {
         // load tide tables and return weekend daytime low tides
         if (err) throw err;
@@ -35,7 +50,7 @@ module.exports.run = function(config) {
         });
         log.info("found "+lowTides.length+" weekend daytime low tides");
         // send new tide items to output key
-        workerUtil.saveAndForward(config, lowTides);
+        self.saveAndForward(lowTides);
     });
 };
 

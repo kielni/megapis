@@ -1,5 +1,5 @@
-var log4js = require('log4js'),
-    log = log4js.getLogger('megapis-server'),
+var log4js = require("log4js"),
+    log = log4js.getLogger("megapis-server"),
     _ = require("lodash"),
     jf = require("jsonfile"),
     globalConfig = {};
@@ -9,27 +9,6 @@ module.exports.loadGlobalConfig = function(filename) {
     return globalConfig;
 };
 
-function getKey(config, key) {
-    try {
-        return key.split(".").reduce(function(o, x) { return o[x]; }, config);
-    } catch(err) {
-        return null;
-    }
-}
-
-function validateConfig(config, requiredKeys) {
-    var ok = true;
-    _.each(requiredKeys, function(key) {
-        if (!getKey(config, key)) {
-            log.error("missing required config key "+key);
-            ok = false;
-        }
-    });
-    return ok;
-}
-
-module.exports.validateConfig = validateConfig;
-
 function getWorkerConfig(worker) {
     var config = _.assign(globalConfig, jf.readFileSync("config/"+worker.id+".json", "utf-8"));
     config.id = worker.id;
@@ -38,12 +17,22 @@ function getWorkerConfig(worker) {
 
 module.exports.getWorkerConfig = getWorkerConfig;
 
-module.exports.runWorker = function(worker) {
-    workerConfig = getWorkerConfig(worker);
-    var w = require(worker.module);
-    if (w.requiredConfigKeys && !validateConfig(workerConfig, w.requiredConfigKeys)) {
+module.exports.runWorker = function(workerObj) {
+    var worker = require(workerObj.module).createWorker(getWorkerConfig(workerObj));
+    if (!worker.validateConfig()) {
         return;
     }
-    w.run(workerConfig);
+    worker.run();
+};
+
+module.exports.getWorkerName = function(workerId) {
+    var name = workerId;
+    var worker = _.find(globalConfig.workers, function(w) {
+        return w.id === workerId;
+    });
+    if (worker) {
+        name = worker.name;
+    }
+    return name;
 };
 

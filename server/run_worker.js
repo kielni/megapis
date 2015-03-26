@@ -12,13 +12,13 @@ var megapisUtil = require("./util"),
 */
 var config = megapisUtil.loadGlobalConfig("config/global.json");
 var id = process.argv[2];
-var worker = _.find(config.workers, function(w) {
+var workerObj = _.find(config.workers, function(w) {
     return w.id === id;
 });
-if (!worker) {
+if (!workerObj) {
     log.error("can't find worker "+id);
     process.exit(1);
 }
 log.info("running "+id);
-megapisUtil.runWorker(worker);
+megapisUtil.runWorker(workerObj);
 

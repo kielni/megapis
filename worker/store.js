@@ -1,8 +1,8 @@
 var redis = require("redis"),
     _ = require("lodash"),
     jf = require("jsonfile"),
-    log4js = require('log4js'),
-    log = log4js.getLogger('megapis-worker-util'),
+    log4js = require("log4js"),
+    log = log4js.getLogger("megapis-worker-store"),
     client;
 
 /*

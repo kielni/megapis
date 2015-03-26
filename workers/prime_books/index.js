@@ -1,16 +1,31 @@
 var log4js = require("log4js"),
     log = log4js.getLogger("megapis-worker"),
-    workerUtil = require("megapis-worker-util"),
     request = require("request"), 
     cheerio = require("cheerio"), 
     _ = require("lodash"),
-    async = require("async");
+    async = require("async"),
+    util = require("util");
 
-module.exports.requiredConfigKeys = ["urls", "output"];
+var MegapisWorker = require("megapis-worker").MegapisWorker;
 
-module.exports.run = function(config) {
+function PrimeBooksWorker(config) {
+    PrimeBooksWorker.super_.call(this, config);
+}
+ 
+util.inherits(PrimeBooksWorker, MegapisWorker);
+
+exports.createWorker = function(config) {
+    return new PrimeBooksWorker(config);
+};
+
+PrimeBooksWorker.prototype.getConfigKeys = function() {
+    return ["urls", "output"];
+};
+
+PrimeBooksWorker.run = function(config) {
     var books = [];
     var byUrl = {};
+    var self = this;
     async.forEach(config.urls, function(url, callback) {
         request(url, function(err, response, body) {
             if (err) throw err;
@@ -55,10 +70,7 @@ module.exports.run = function(config) {
                 callback();
             });
         }, function(err) {
-            var client = workerUtil.store.createClient(config);
-            client.add(config.output, books, function(err, replies) {
-                client.quit();
-            });
+            self.save(books);
         });
     });
 };

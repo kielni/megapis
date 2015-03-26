@@ -33,7 +33,7 @@ see [running a server](server/README.id)
 ## Writing a Megapis worker
 
 A Megapis worker is a just a node module that exports a `run` method and (optionally)
-a `requiredConfigKeys` array.  Require `megapis-worker-util` for functions that make
+a `requiredConfigKeys` array.  Require `megapis-worker` for functions that make
 it easier to work with the Redis persistence store.  
 
 Before running the worker, the server merges its global 
@@ -51,7 +51,7 @@ will generate a set of files in `worker_path/worker_name` and runs
 `npm install` to get dependencies.  The files are:
 
 - `index.js` - code to get information and save it to the store
-- `package.json` - starter file with `log4js` and `megapis-worker-util` dependencies
+- `package.json` - starter file with `log4js` and `megapis-worker` dependencies
 - `README.md` - describe your worker
 - `sample_config.json` - sample configuration file
 

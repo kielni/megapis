@@ -4,9 +4,23 @@ var mandrill = require("mandrill-api/mandrill"),
     handlebars = require("handlebars"),
     fs = require("fs"),
     _ = require("lodash"),
-    workerUtil = require("megapis-worker-util");
+    util = require("util");
 
-module.exports.requiredConfigKeys = ["message", "mandrill.apiKey"];
+var MegapisWorker = require("megapis-worker").MegapisWorker;
+
+function MandrillWorker(config) {
+    MandrillWorker.super_.call(this, config);
+}
+ 
+util.inherits(MandrillWorker, MegapisWorker);
+
+exports.createWorker = function(config) {
+    return new MandrillWorker(config);
+};
+
+MandrillWorker.prototype.getConfigKeys = function() {
+    return ["message", "mandrill.apiKey"];
+};
 
 function makeMessage(config, values) {
     // group values by source
@@ -36,7 +50,7 @@ function makeMessage(config, values) {
 
         html.push({
             "source": source,
-            "name": workerUtil.getWorkerName(config, source),
+            "name": workerUtil.getWorkerName(config, source), // TODO: where does this go?
             "html": sourceHtml.trim() 
         });
     });
@@ -67,7 +81,7 @@ function sendMessage(config, html) {
     });
 }
 
-module.exports.run = function(config) {
+MandrillWorker.prototype.run = function(config) {
     var client = workerUtil.store.createClient(config);
     log.info("getting values for "+config.id);
     client.get(config.id, function(err, values) {

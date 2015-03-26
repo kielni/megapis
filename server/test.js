@@ -15,42 +15,58 @@ function hasKey(obj, key) {
 
 // validate global config
 var config = megapisUtil.loadGlobalConfig("config/global.json");
-log.info("validating global config");
-if (!megapisUtil.validateConfig(config, ["workers", "redis.port", "redis.host"])) {
+process.stdout.write("global config ");
+var ok = true;
+_.each(["workers", "redis.port", "redis.host"], function(key) {
+    try {
+        key.split(".").reduce(function(o, x) { return o[x]; }, config);
+    } catch(err) {
+        console.error("\nmissing required config key "+key);
+        ok = false;
+    }
+});
+process.stdout.write(" ... ok\n");
+if (!ok) {
+    process.exit(1);
+}
+if (config.workers.length < 1) {
+    console.error("\nmust have at least 1 worker");
     process.exit(1);
 }
 
 // validate each task
 var index = 0;
-_.each(config.workers, function(worker) {
+_.each(config.workers, function(workerObj) {
     // worker must have id, name, module, and schedule
     index += 1;
-    if (!hasKey(worker, "id")) {
+    if (!hasKey(workerObj, "id")) {
         process.exit(1);
     }
-    if (!hasKey(worker, "name")) {
+    if (!hasKey(workerObj, "name")) {
         process.exit(1);
     }
-    log.info("validating worker "+worker.name);
-    if (!hasKey(worker, "schedule") || !hasKey(worker, "module")) {
+    process.stdout.write("worker "+workerObj.name+"\n");
+    if (!hasKey(workerObj, "schedule") || !hasKey(workerObj, "module")) {
         process.exit(1);
     }
     // load config file
-    log.info("validating worker config "+worker.id+".json");
-    var workerConfig = megapisUtil.getWorkerConfig(worker);
+    process.stdout.write("\tconfig "+workerObj.id+".json ");
+    var workerConfig = megapisUtil.getWorkerConfig(workerObj);
     // load code
-    var w = require(worker.module);
+    var worker = require(workerObj.module).createWorker(workerConfig);
     // validate config
-    if (w.requiredConfigKeys && !megapisUtil.validateConfig(workerConfig, w.requiredConfigKeys)) {
+    if (!worker.validateConfig()) {
         process.exit(1);
     }
+    process.stdout.write(" ... ok\n");
     // validate schedule
+    process.stdout.write("\tscchedule "+workerObj.schedule+" ");
     try {
-        new CronJob(worker.schedule, function() {});
+        new CronJob(workerObj.schedule, function() {});
     } catch(ex) {
-        log.error("invalid schedule "+worker.schedule, ex);
+        console.error("\ninvalid schedule "+workerObj.schedule, ex);
         process.exit(1);
     }
+    process.stdout.write(" ... ok\n");
 });
-log.info("ok");
 process.exit(0);

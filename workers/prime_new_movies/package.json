@@ -1,6 +1,6 @@
 {
   "name": "megapis-prime-new-movies",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Get movies recently added to prime and add to daily email",
   "main": "index.js",
   "scripts": {

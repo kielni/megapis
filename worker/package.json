@@ -1,7 +1,7 @@
 {
-  "name": "megapis-worker-util",
-  "version": "0.0.1",
-  "description": "Utilities for Megapis workers",
+  "name": "megapis-worker",
+  "version": "0.0.2",
+  "description": "Base class for Megapis workers",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

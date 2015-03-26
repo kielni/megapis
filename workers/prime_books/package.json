@@ -1,6 +1,6 @@
 {
   "name": "megapis-prime-books",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "Get books recently added to Kindle lending library and add to daily email",
   "main": "index.js",
   "scripts": {
