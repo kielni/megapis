@@ -14,9 +14,14 @@ var CronJob = require("cron").CronJob,
 var config = megapisUtil.loadGlobalConfig("config/global.json");
 var requiredConfigKeys = ["workers", "redis.port", "redis.host"];
 
-if (!megapisUtil.validateConfig(config, requiredConfigKeys)) {
-    process.exit(1);
-}
+_.each(["workers", "redis.port", "redis.host"], function(key) {
+    try {
+        key.split(".").reduce(function(o, x) { return o[x]; }, config);
+    } catch(err) {
+        console.error("\nmissing required config key "+key);
+        process.exit(1);
+    }
+});
 
 _.each(config.workers, function(worker) {
     log.info("scheduling "+worker.name+": "+worker.schedule);
