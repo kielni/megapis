@@ -75,3 +75,25 @@ MegapisWorker.prototype.saveAndForward = function(values) {
         });
     });
 };
+
+MegapisWorker.prototype.getAndDelete = function(key, callback) {
+    var client = store.createClient(this.config);
+    client.get(key, function(err, values) {
+        callback(err, values);
+        client.del(key, function(err, replies) {
+            client.quit();
+        });
+    });
+};
+
+MegapisWorker.prototype.getWorkerName = function(workerId) {
+    var name = workerId;
+    var worker = _.find(this.config.workers, function(w) {
+        return w.id === workerId;
+    });
+    if (worker) {
+        name = worker.name;
+    }
+    return name;
+};
+

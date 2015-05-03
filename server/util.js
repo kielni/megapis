@@ -25,14 +25,3 @@ module.exports.runWorker = function(workerObj) {
     worker.run();
 };
 
-module.exports.getWorkerName = function(workerId) {
-    var name = workerId;
-    var worker = _.find(globalConfig.workers, function(w) {
-        return w.id === workerId;
-    });
-    if (worker) {
-        name = worker.name;
-    }
-    return name;
-};
-

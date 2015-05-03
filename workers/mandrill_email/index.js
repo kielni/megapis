@@ -22,7 +22,7 @@ MandrillWorker.prototype.getConfigKeys = function() {
     return ["message", "mandrill.apiKey"];
 };
 
-function makeMessage(config, values) {
+MandrillWorker.prototype.makeMessage = function(values) {
     // group values by source
     var grouped = _.groupBy(values, function(value) {
         if (!value.source) {
@@ -32,10 +32,11 @@ function makeMessage(config, values) {
     });
     log.info("found keys ", _.keys(grouped));
 
+    var self = this;
     var html = [];
     // render each set of values with a custom template if available
     _.each(_.keys(grouped), function(source) {
-        var filename = "config/"+config.id+"_"+source+".hbs";
+        var filename = "config/"+self.config.id+"_"+source+".hbs";
         log.debug("looking for template "+filename+" for "+source+" messages");
         if (!fs.existsSync(filename)) {
             log.debug("template not found; using default");
@@ -50,24 +51,24 @@ function makeMessage(config, values) {
 
         html.push({
             "source": source,
-            "name": workerUtil.getWorkerName(config, source), // TODO: where does this go?
+            "name": self.getWorkerName(source),
             "html": sourceHtml.trim() 
         });
     });
     if (html.length === 0) {
         return null;
     }
-    var messageTemplate = "config/"+config.id+".hbs";
+    var messageTemplate = "config/"+this.config.id+".hbs";
     log.debug("generating message with "+messageTemplate);
     var template = handlebars.compile(fs.readFileSync(messageTemplate, "utf-8"));
     return template({"sources": html});
-}
+};
 
-function sendMessage(config, html) {
-    var mandrillClient = new mandrill.Mandrill(config.mandrill.apiKey);
+MandrillWorker.prototype.sendMessage = function(html) {
+    var mandrillClient = new mandrill.Mandrill(this.config.mandrill.apiKey);
     // message should have subject, from_email, and to
     // see https://mandrillapp.com/api/docs/messages.nodejs.html
-    var message = config.message;
+    var message = this.config.message;
     message.html = html;
     var data = {
         "message": message,
@@ -79,20 +80,18 @@ function sendMessage(config, html) {
     function(e) {
         log.error("A mandrill error occurred: " + e.name + "" - "" + e.message);
     });
-}
+};
 
-MandrillWorker.prototype.run = function(config) {
-    var client = workerUtil.store.createClient(config);
+MandrillWorker.prototype.run = function() {
+    var self = this;
+    var config = this.config;
     log.info("getting values for "+config.id);
-    client.get(config.id, function(err, values) {
-        var message = makeMessage(config, values);
+    this.getAndDelete(config.id, function(err, values) {
+        var message = self.makeMessage(values);
         if (message) {
-            sendMessage(config, message);
+            self.sendMessage(message);
         } else {
             log.info("nothing to send");
         }
-        client.del(config.id, function(err, replies) {
-            client.quit();
-        });
     });
 };

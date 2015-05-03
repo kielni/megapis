@@ -22,11 +22,11 @@ PrimeBooksWorker.prototype.getConfigKeys = function() {
     return ["urls", "output"];
 };
 
-PrimeBooksWorker.run = function(config) {
+PrimeBooksWorker.prototype.run = function() {
     var books = [];
     var byUrl = {};
     var self = this;
-    async.forEach(config.urls, function(url, callback) {
+    async.forEach(this.config.urls, function(url, callback) {
         request(url, function(err, response, body) {
             if (err) throw err;
             var $ = cheerio.load(body);
@@ -61,7 +61,7 @@ PrimeBooksWorker.run = function(config) {
                 tag = tag.replace("Amazon.com: ", "");
                 tag = tag.replace(": Kindle Store", "");
                 book.tag = tag;
-                book.source = config.id;
+                book.source = self.config.id;
                 books.push(book);
                 i++;
                 if (i%10 === 0) {
