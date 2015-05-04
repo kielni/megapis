@@ -1,0 +1,5 @@
+{
+    "output": "weeklyEmail",
+    "url": "http://events.sjpl.org/widget/view?schools=sjlibrary&venues=alum_rock_341%2Cberryessa_665%2Ceducational_park_435%2Chillview_69%2Ceast_san_jose_carnegie_530&types=33768&exclude_types=34572%2C34325&days=14&num=50&format=html",
+    "excludeRegex": "craft|Reading to Children|Early Learning|Wii"
+}
