@@ -17,7 +17,7 @@ exports.createWorker = function(config) {
 };
 
 Worker.prototype.getConfigKeys = function() {
-    return ["output"];
+    return ["output", "url"];
 };
 
 Worker.prototype.run = function() {
@@ -39,18 +39,12 @@ Worker.prototype.run = function() {
             // 20140127T224000Z/20140320T221500Z
             var startDt = moment(ev.eventDate+" "+ev.start, "YYYYMMDD hh:mm A");
             var endDt = moment(ev.eventDate+" "+ev.end, "YYYYMMDD hh:mm A");
-            var calDate = startDt.tz("UTC").format("YYYYMMDDTHHmm00")+"Z/"+
-                endDt.tz("UTC").format("YYYYMMDDTHHmm00")+"Z";
-            var calendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text="+
-                encodeURI(ev.eventDescription)+"&dates="+calDate+"&details="+
-                encodeURI(ev.desc)+"&location="+encodeURI(ev.locname)+
-                "&sf=true&output=xml";
 
             upcoming.push({
                 date: dt.format("ddd M/D"),
                 dt: ev.eventDate,
                 url: ev.url,
-                calendarUrl: calendarUrl,
+                calendarUrl: self.getCalendarUrl(startDt, endDt, ev.eventDescription, ev.desc, ev.locname),
                 description: ev.desc,
                 title: ev.eventDescription,
                 time: ev.start+' - '+ev.end,
@@ -63,6 +57,5 @@ Worker.prototype.run = function() {
         });
         log.info("found "+upcoming.length+" county parks events");
         self.saveAndForward(upcoming);
-        //self.saveAndForward([{x:1}]);
     });
 };
