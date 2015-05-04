@@ -2,6 +2,7 @@ var store = require("./store"),
     log4js = require("log4js"),
     log = log4js.getLogger("megapis-worker"),
     _ = require("lodash"),
+    moment = require("moment-timezone"),
     util = require("util");
 
 var MegapisWorker = function(config) {
@@ -97,3 +98,10 @@ MegapisWorker.prototype.getWorkerName = function(workerId) {
     return name;
 };
 
+MegapisWorker.prototype.getCalendarUrl = function(startDt, endDt, title, description, location) {
+    var calDate = startDt.tz("UTC").format("YYYYMMDDTHHmm00")+"Z/"+
+        endDt.tz("UTC").format("YYYYMMDDTHHmm00")+"Z";
+    return "https://www.google.com/calendar/render?action=TEMPLATE&text="+
+        encodeURI(title)+"&dates="+calDate+"&details="+encodeURI(description)+
+        "&location="+encodeURI(location)+"&sf=true&output=xml";
+};
