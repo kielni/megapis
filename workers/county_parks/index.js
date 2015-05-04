@@ -1,7 +1,7 @@
 var log4js = require("log4js"),
     log = log4js.getLogger("megapis-worker"),
     request = require("request"),
-    moment = require("moment"),
+    moment = require("moment-timezone"),
     util = require("util");
 
 var MegapisWorker = require("megapis-worker").MegapisWorker;
@@ -36,10 +36,21 @@ Worker.prototype.run = function() {
                 return;
             }
             var dt = moment(ev.eventDate, "YYYYMMDD");
+            // 20140127T224000Z/20140320T221500Z
+            var startDt = moment(ev.eventDate+" "+ev.start, "YYYYMMDD hh:mm A");
+            var endDt = moment(ev.eventDate+" "+ev.end, "YYYYMMDD hh:mm A");
+            var calDate = startDt.tz("UTC").format("YYYYMMDDTHHmm00")+"Z/"+
+                endDt.tz("UTC").format("YYYYMMDDTHHmm00")+"Z";
+            var calendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text="+
+                encodeURI(ev.eventDescription)+"&dates="+calDate+"&details="+
+                encodeURI(ev.desc)+"&location="+encodeURI(ev.locname)+
+                "&sf=true&output=xml";
+
             upcoming.push({
                 date: dt.format("ddd M/D"),
                 dt: ev.eventDate,
                 url: ev.url,
+                calendarUrl: calendarUrl,
                 description: ev.desc,
                 title: ev.eventDescription,
                 time: ev.start+' - '+ev.end,
@@ -50,8 +61,8 @@ Worker.prototype.run = function() {
         upcoming.sort(function(a, b) {
             return a.dt - b.dt;
         });
-        console.log(upcoming);
         log.info("found "+upcoming.length+" county parks events");
         self.saveAndForward(upcoming);
+        //self.saveAndForward([{x:1}]);
     });
 };
