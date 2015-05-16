@@ -5,7 +5,7 @@ var fs = require("fs-extra"),
     exec = require("child_process").exec;
 
 if (process.argv.length < 3) {
-    console.log("usage: node new_worker <worker_name> <worker_path>");
+    console.log("usage: node new_worker <worker-name> <worker-path>");
     process.exit(1);
 }
 var name = process.argv[2];
@@ -19,10 +19,14 @@ if (process.argv.length > 2) {
     path = "";
 }
 path += name.replace(/-/g, "_");
-var workerId = name.replace(/(?:^|[-_])(\w)/g, function (_, c) {
-    return c ? c.toUpperCase () : '';
+var workerId = name.replace(/(?:^|[-_])(\w)/g, function(_, c, offset) {
+    if (offset === 0) {
+        return c ? c.toLowerCase () : '';
+    } else {
+        return c ? c.toUpperCase () : '';
+    }
 });
-
+//workerID = 
 var gitUrl = process.env.MEGAPIS_GIT_URL || "";
 var author = process.env.MEGAPIS_AUTHOR || "";
 
