@@ -1,3 +1,6 @@
 {
-    "output": ""
+    "outputPath": "/path/to/save/files",
+    "username": "",
+    "password": "",
+    "fromDaysAgo": 7
 }

@@ -21,9 +21,12 @@
   },
   "homepage": "",
   "dependencies": {
+    "async": "^0.9.0",
     "log4js": "^0.6.22",
     "megapis-worker": "^0.0.2",
+    "moment": "^2.10.3",
     "request": "^2.55.0",
+    "simple-fmt": "^0.1.0",
     "tough-cookie": "^1.1.0"
   }
 }
