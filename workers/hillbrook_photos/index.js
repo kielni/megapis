@@ -36,13 +36,13 @@ function downloadFile(url, path, callback) {
     stream.pipe(fs.createWriteStream(path)
             .on("error", function(err) {
                 log.error("error piping "+url+": ", err);
-                // don't want to stop for each, so don't send an error
+                // don't want to stop foreach, so don't send an error
                 callback();
                 stream.read();
             })
         )
         .on("close", function() {
-            log.debug("downloaded "+url+" to "+path);
+            //log.debug("downloaded "+url+" to "+path);
             total += 1;
             if (total % 100 === 0) {
                 log.info("* "+total);
@@ -119,8 +119,8 @@ HillbrookWorker.prototype.run = function() {
                 method: "POST",
                 json: {
                     From: "",
-                    Username: this.config.username,
-                    Password: this.config.password,
+                    Username: self.config.username,
+                    Password: self.config.password,
                     remember: true,
                     InterfaceSource: "WebApp"
                 },
