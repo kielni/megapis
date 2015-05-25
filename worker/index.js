@@ -55,6 +55,7 @@ MegapisWorker.prototype.save = function(values) {
 MegapisWorker.prototype.saveAndForward = function(values) {
     var config = this.config;
     var client = store.createClient(config);
+    log.debug("saving key="+config.id+" values=", values);
     client.save(config.id, values, function(err, replies) {
         log.debug("saved "+values.length+" values to "+config.id);
         client.getDiffJson(config.id, function(err, unseen) {
@@ -66,7 +67,7 @@ MegapisWorker.prototype.saveAndForward = function(values) {
             // send to output key
             if (unseen && unseen.length > 0) {
                 client.add(config.output, unseen, function(err, replies) {
-                    log.debug("done add", err, replies);
+                    log.debug("done add");
                     client.quit();
                 });
             } else {
@@ -81,6 +82,7 @@ MegapisWorker.prototype.getAndDelete = function(key, callback) {
     var client = store.createClient(this.config);
     client.get(key, function(err, values) {
         callback(err, values);
+            client.quit();
         client.del(key, function(err, replies) {
             client.quit();
         });

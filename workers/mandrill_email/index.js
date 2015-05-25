@@ -54,6 +54,10 @@ MandrillWorker.prototype.makeMessage = function(values) {
             "name": self.getWorkerName(source),
             "html": sourceHtml.trim() 
         });
+        if (self.config.debug) {
+            log.debug("source="+source+" name="+self.getWorkerName(source)+
+                " html=\n"+sourceHtml.trim()+"-----");
+        }
     });
     if (html.length === 0) {
         return null;
