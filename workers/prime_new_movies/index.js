@@ -5,9 +5,10 @@ var log4js = require("log4js"),
     _ = require("lodash"),
     async = require("async"),
     xray = require("x-ray"),
+    _ = require("underscore"),
     util = require("util");
 
-require('request-debug')(request);
+//require("request-debug")(request);
 
 var MegapisWorker = require("megapis-worker").MegapisWorker;
 
@@ -25,137 +26,68 @@ PrimeMoviesWorker.prototype.getConfigKeys = function() {
     return ["urls", "output"];
 };
 
-function getThumbnail(err, obj) {
-    /*
-    console.log("found "+array.length+" thumbnails");
-    console.log(array);
-    */
-    console.log("obj=", obj);
-}
+function getMovieDetails(movies, key, callback) {
+/*
+    http://www.omdbapi.com/?t=An+Unfinished+Life&y=&plot=full&r=json
 
-function getMovieDetails(obj) {
-//        xray(url)
-
+    {"Title":"An Unfinished Life","Year":"2005","Rated":"PG-13","Released":"16 Sep 2005","Runtime":"108 min","Genre":"Drama","Director":"Lasse Hallström","Writer":"Mark Spragg, Virginia Korus Spragg","Actors":"Robert Redford, Jennifer Lopez, Morgan Freeman, Josh Lucas","Plot":"A down on her luck woman, desperate to provide care for her daughter, moves in with her father in-law from whom she is estranged. Through time, they learn to forgive each other and heal old wounds.","Language":"English","Country":"USA, Germany","Awards":"2 wins.","Poster":"http://ia.media-imdb.com/images/M/MV5BMjc3MzE
+ */
+    var movie = movies[key];
+    //log.debug("get ", movie.title);
+    var url = "http://www.omdbapi.com/?y=&plot=full&r=json&t="+encodeURIComponent(movie.title);
+    request(url, function(err, response, body) {
+        if (!err) {
+            movies[key] = _.extend(movie, JSON.parse(body));
+        }
+        callback(null, movies);
+    });
 }
 
 PrimeMoviesWorker.prototype.run = function() {
+    log4js.configure({ appenders: [ { type: "console", layout: { type: "basic" } } ], replaceConsole: true });
     var byId = {};
-    var movies = [];
     var self = this;
-    async.forEach(self.config.urls, function(url, callback) {
-        log.debug("url=", url);
-        xray(url)
-            //.select([".s-result-item"])
-            .select({
-                $root: ".s-result-item",
-                link: 'a.s-access-detail-page[href]',
-                thumb: 'img.s-access-image[src]',
-                asin: "[data-asin]",
-                title: "a.s-access-detail-page[title]"
-            })
-            .run(function(err, obj) {
-                movies.push(getMovieDetails(obj));
+    var movies = {};
+    var minYear = this.config.minYear || 0;
+    async.waterfall([
+        function loadMovieList(next) {
+            async.each(self.config.urls, function(url, forEachCallback) {
+                xray(url)
+                    .select([{
+                    $root: ".s-result-item",
+                    link: "a.s-access-detail-page[href]",
+                    thumb: "img.s-access-image[src]",
+                    asin: "[data-asin]",
+                    title: "a.s-access-detail-page[title]"
+                }])
+                .run(function(err, array) {
+                    log.debug("found ", array.length+" movies on "+url);
+                    _.forEach(array, function(movie) {
+                        // remove extra notes in title because it confuses search
+                        movie.title = movie.title.replace(/\s+\(.*?\)/g, '');
+                        movies[movie.asin] = movie;
+                    });
+                    forEachCallback();
+                });
+            }, function(err) {
+                next(null, movies);
             });
-        }, function(err) {
-            log.info("done, movies=", movies);
-            if (err) {
-                log.error("error: ", err);
-            }
-            self.saveAndForward(movies);
-    });
-};
-
-PrimeMoviesWorker.prototype.runPrev = function() {
-    var byId = {};
-    var movies = [];
-    var self = this;
-    async.forEach(self.config.urls, function(url, callback) {
-        var req = {
-            url: url,
-            headers: {
-                "User-Agent": "curl/7.32.0"
-            }
-        };
-        // "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36"
-        // get genre pages
-        request(req, function(err, response, body) {
-            if (err) throw err;
-            var $ = cheerio.load(body);
-            // get movie thumbnails
-            $(".s-result-item").each(function() {
-                //console.log("s-result-item=", $(this).html());
-                var id = $(this).data("asin");
-                var container = $(this).find(".s-item-container");
-                var url = $(container).find(".a-row:nth-child(1) a").attr("href");
-                // http://www.amazon.com/Anchorman-Legend-Continues-Will-Ferrell/dp/B00HVNZ6Q2/
-                var re = new RegExp("(.*/dp/.*?)/.*");
-                var match = url.match(re);
-                if (match && match.length > 1) {
-                    url = match[1];
-                }
-                var shortTitle = $(container).find("a.s-access-detail-page").attr("title");
-                byId[id] = {
-                    url: url,
-                    shortTitle: shortTitle,
-                };
+        },
+        function loadDetails(movies, next) {
+            log.debug("found "+_.keys(movies).length+" movies");
+            async.each(_.keys(movies), function(key, forEachCallback) {
+                getMovieDetails(movies, key, forEachCallback);
+            }, function(err) {
+                next(null, movies);
             });
-            callback();
+        },
+    ], function(err, movies) {
+        var list = _.filter(_.values(movies), function(movie) {
+            var keep = (!movie.Year || parseInt(movie.Year) >= minYear);
+            log.debug((keep ? "keep " : "skip ")+movie.title+" - "+movie.Year);
+            return keep;
         });
-    }, function(err) {
-        var total = _.keys(byId).length;
-        var i = 0;
-        log.info("got "+total+" movies");
-        async.forEach(_.values(byId).slice(0,1), function(movie, callback) {
-            // get synopsis from detail page
-            //console.log("movie "+i+" page="+movie.url);
-            request(movie.url, function(err, response, body) {
-                if (err) throw err;
-                log.info(movie.url+"\n"+body);
-                var $ = cheerio.load(body);
-                console.log("\n===============\nhtml=", $("*").html());
-                var ogUrl = $("meta[property='og:url']");
-                var url, id;
-                if (ogUrl && ogUrl.length) {
-                    url = ogUrl.attr("content");
-                    id = url.match(/product\/(.*?)\//)[1];
-                } else {
-                    url = $("link[rel='canonical']").attr("href");
-                    id = url.match(/dp\/(.*?)$/)[1];
-                }
-                // remove request param on end
-                var re = new RegExp("(.*?/"+id+")/.*");
-                var match = url.match(re);
-                if (match && match.length > 1) {
-                    url = url.match(re)[1];
-                }
-                var m = byId[id];
-                m.url = url;
-                log.debug(i+" parsed url="+movie.url);
-                //log.debug($("html").html());
-                // image is in a script
-                re = new RegExp(".*?(http://ecx.images-amazon.com/.*?.jpg).*");
-                match = body.match(re);
-                if (match && match.length > 1) {
-                    //m.img = $("meta[property='og:image']").attr("content");
-                    m.img = match[1];
-                }
-                m.description = $("meta[property='og:description']").attr("content");
-                m.rating = $("meta[property='og:rating']").attr("content");
-                m.ratingCount = $("meta[property='og:rating_count']").attr("content");
-                console.log("parsed values=", m);
-                movies.push(m);
-                i++;
-                if (i%10 === 0) {
-                    log.debug("loaded "+i+"/"+total+" movie pages");
-                }
-                callback();
-            });
-        }, function(err) {
-            log.info("done, movies=", movies);
-            if (err) {
-                log.error("error: ", err);
-            }
-            self.saveAndForward(movies);
-        });
+        log.debug("found "+list.length+" movies since "+minYear);
+        self.saveAndForward(list);
     });
 };
