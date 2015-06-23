@@ -1,0 +1,8 @@
+{
+    "output": "weeklyEmail",
+    "apiKey": "",
+    "authors": ["Robin Hobb", "William Gibson", "Neal Stephenson"],
+    "language": "en",
+    "maxAge": "14",
+    "forSaleIn": "US"
+}
