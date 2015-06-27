@@ -7,6 +7,8 @@ var log4js = require("log4js"),
     async = require("async"),
     request = require("request");
 
+require("request-debug")(request);
+
 var MegapisWorker = require("megapis-worker").MegapisWorker;
 var photoCount = 0;
 
@@ -33,22 +35,25 @@ function downloadFile(url, path, callback) {
             // don't want to stop for each, so don't send an error
             callback();
         });
-    stream.pipe(fs.createWriteStream(path)
-            .on("error", function(err) {
-                log.error("error piping "+url+": ", err);
-                // don't want to stop foreach, so don't send an error
-                callback();
-                stream.read();
-            })
-        )
-        .on("close", function() {
-            //log.debug("downloaded "+url+" to "+path);
-            total += 1;
-            if (total % 100 === 0) {
-                log.info("* "+total);
-            }
-            callback();
+    var output = fs.createWriteStream(path)
+        .on("error", function(err) {
+            log.error("error in write stream "+url+": ", err);
+            //stream.read();
         });
+    if (output) {
+        stream.pipe(output)
+            .on("close", function() {
+                log.debug("downloaded "+url+" to "+path);
+                total += 1;
+                if (total % 100 === 0) {
+                    log.info("* "+total);
+                }
+                callback();
+            });
+    } else {
+        log.error("output failed");
+        callback();
+    }
 }
 
 function downloadPhotos(outputPath, photos, callback) {
@@ -62,7 +67,8 @@ function downloadPhotos(outputPath, photos, callback) {
             log.debug("created directory "+dir);
         }
     });
-    async.forEach(photos, function(photo, forEachCallback) {
+    // look like a browser, and don't run out of file descriptors
+    async.forEachSeries(photos, function(photo, forEachCallback) {
         downloadFile(photo.url, outputPath+"/"+photo.albumKey+"/"+photo.filename,
             forEachCallback);
     }, function(err) {
