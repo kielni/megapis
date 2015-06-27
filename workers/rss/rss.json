@@ -1,0 +1,9 @@
+{
+    "output": "s3Upload",
+    "urls": [
+        "http://feeds.feedburner.com/AmazonWebServicesBlog",
+    ],
+    "maxDaysOld": 7,
+    "maxItemsPerFeed": 4,
+    "excludeKey": "rssExclude"
+}
