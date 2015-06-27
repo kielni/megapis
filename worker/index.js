@@ -82,10 +82,17 @@ MegapisWorker.prototype.getAndDelete = function(key, callback) {
     var client = store.createClient(this.config);
     client.get(key, function(err, values) {
         callback(err, values);
-            client.quit();
         client.del(key, function(err, replies) {
             client.quit();
         });
+    });
+};
+
+MegapisWorker.prototype.get = function(key, callback) {
+    var client = store.createClient(this.config);
+    client.get(key, function(err, values) {
+        callback(err, values);
+        client.quit();
     });
 };
 
