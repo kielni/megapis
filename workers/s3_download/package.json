@@ -1,0 +1,29 @@
+{
+  "name": "megapis-s3-download",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "megapis",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "/issues"
+  },
+  "homepage": "",
+  "dependencies": {
+    "log4js": "^0.6.22",
+    "megapis-worker": "^0.0.2",
+    "aws-sdk": "2.1.35",
+    "async": "^1.2.0"
+  }
+}
