@@ -53,10 +53,11 @@ PrimeBooksWorker.prototype.run = function() {
                 var $ = cheerio.load(body);
                 var book = byUrl[url];
                 book.url = $("link[rel='canonical']").attr("href");
-                book.description = $(".content").text().trim();
+                book.description = $("#bookDescription_feature_div noscript").text().trim();
                 if (book.description.length > 500) {
                     book.description = book.description.substring(0, 500)+"...";
                 }
+                log.debug("url="+url+"\n"+book.description+"\n\n");
                 var tag = $("meta[name='title']").attr("content");
                 tag = tag.replace("Amazon.com: ", "");
                 tag = tag.replace(": Kindle Store", "");
