@@ -7,8 +7,6 @@ var log4js = require("log4js"),
     async = require("async"),
     request = require("request");
 
-require("request-debug")(request);
-
 var MegapisWorker = require("megapis-worker").MegapisWorker;
 var photoCount = 0;
 
