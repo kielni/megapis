@@ -17,11 +17,16 @@ function getWorkerConfig(worker) {
 
 module.exports.getWorkerConfig = getWorkerConfig;
 
-module.exports.runWorker = function(workerObj) {
-    var worker = require(workerObj.module).createWorker(getWorkerConfig(workerObj));
+module.exports.makeWorker = function(workerObj) {
+    return require(workerObj.module).createWorker(getWorkerConfig(workerObj));
+};
+
+module.exports.runWorker = function(workerObj, callback) {
+    var worker = this.makeWorker(workerObj);
     if (!worker.validateConfig()) {
+        callback("error: "+workerObj.name+" invalid config");
         return;
     }
-    worker.run();
+    worker.run(callback);
 };
 

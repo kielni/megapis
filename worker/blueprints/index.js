@@ -18,6 +18,7 @@ Worker.prototype.getConfigKeys = function() {
     return ["output"];
 };
 
-Worker.prototype.run = function() {
-    // go get stuff
+Worker.prototype.run = function(callback) {
+    log.debug("do something");
+    callback();
 };

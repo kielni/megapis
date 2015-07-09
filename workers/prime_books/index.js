@@ -22,7 +22,7 @@ PrimeBooksWorker.prototype.getConfigKeys = function() {
     return ["urls", "output"];
 };
 
-PrimeBooksWorker.prototype.run = function() {
+PrimeBooksWorker.prototype.run = function(callback) {
     var books = [];
     var byUrl = {};
     var self = this;
@@ -50,6 +50,7 @@ PrimeBooksWorker.prototype.run = function() {
             // get synopsis from detail page link
             request(url, function(err, response, body) {
                 if (err) throw err;
+                log.debug("url=", url);
                 var $ = cheerio.load(body);
                 var book = byUrl[url];
                 book.url = $("link[rel='canonical']").attr("href");
@@ -71,7 +72,7 @@ PrimeBooksWorker.prototype.run = function() {
                 callback();
             });
         }, function(err) {
-            self.save(books);
+            self.save(books, callback);
         });
     });
 };

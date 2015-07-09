@@ -108,7 +108,7 @@ function getPhotoList(albumIds, cookieJar, callback) {
     });
 }
 
-HillbrookWorker.prototype.run = function() {
+HillbrookWorker.prototype.run = function(callback) {
     var self = this;
     var endDt = moment();
     var startDt = moment().subtract(parseInt(this.config.fromDaysAgo), "days");
@@ -151,5 +151,6 @@ HillbrookWorker.prototype.run = function() {
         }
     ], function(err, result) {
         log.debug("done getting photos: "+dateRange);
+        callback();
     });
 };

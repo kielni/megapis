@@ -41,18 +41,19 @@ MegapisWorker.prototype.validateConfig = function() {
     return ok;
 };
 
-MegapisWorker.prototype.save = function(values) {
+MegapisWorker.prototype.save = function(values, callback) {
     var config = this.config;
     var client = store.createClient(config);
     client.add(config.output, values, function(err, replies) {
         client.quit();
+        callback();
     });
 };
 
 /*
     save a key, get differences from previous version, and forward to another key
 */
-MegapisWorker.prototype.saveAndForward = function(values) {
+MegapisWorker.prototype.saveAndForward = function(values, callback) {
     var config = this.config;
     var client = store.createClient(config);
     log.debug("saving key="+config.id+" values=", values);
@@ -69,10 +70,12 @@ MegapisWorker.prototype.saveAndForward = function(values) {
                 client.add(config.output, unseen, function(err, replies) {
                     log.debug("done add");
                     client.quit();
+                    callback();
                 });
             } else {
                 log.info("no new values");
                 client.quit();
+                callback();
             }
         });
     });

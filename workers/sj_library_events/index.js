@@ -20,7 +20,7 @@ Worker.prototype.getConfigKeys = function() {
     return ["output", "url"];
 };
 
-Worker.prototype.run = function() {
+Worker.prototype.run = function(callback) {
     var self = this;
     // https://github.com/lapwinglabs/x-ray
     /*
@@ -81,6 +81,6 @@ Worker.prototype.run = function() {
                     ev.title, ev.description, ev.branch);
                 events.push(ev);
             });
-            self.saveAndForward(events);
+            self.saveAndForward(events, callback);
         });
 };

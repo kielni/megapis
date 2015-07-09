@@ -20,7 +20,7 @@ LowTideWorker.prototype.getConfigKeys = function() {
     return ["location", "output"];
 };
 
-LowTideWorker.prototype.run = function() {
+LowTideWorker.prototype.run = function(callback) {
     var url = "http://www.tide-forecast.com/locations/"+this.config.location+"/tides/latest";
     var self = this;
     request(url, function(err, reponse, body) {
@@ -50,7 +50,7 @@ LowTideWorker.prototype.run = function() {
         });
         log.info("found "+lowTides.length+" weekend daytime low tides");
         // send new tide items to output key
-        self.saveAndForward(lowTides);
+        self.saveAndForward(lowTides, callback);
     });
 };
 

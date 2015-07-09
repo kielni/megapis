@@ -20,7 +20,7 @@ run servers, and write workers in JavaScript.
 
 This repository contains:
 
-[server](server/README.md) - runs workers described by `global.config`
+[server](server/README.md) - runs workers described by config file (default `config/global.json`)
 
 [worker\_util](worker\_util/README.me) - utilities for workers to load, save, and compare values
 
@@ -53,7 +53,7 @@ will generate a set of files in `worker_path/worker_name` and runs
 - `index.js` - code to get information and save it to the store
 - `package.json` - starter file with `log4js` and `megapis-worker` dependencies
 - `README.md` - describe your worker
-- `sample_config.json` - sample configuration file
+- `workerConfig.json` - sample configuration file
 
 To have the Megapis server run your module without publishing it, use `npm link` to make it 
 available to your server:
@@ -70,8 +70,9 @@ Specify required configuration keys:
 
 Create a `run` method that gets a configration object:
 
-    module.exports.run = function(config) {
+    module.exports.run = function(callback) {
         ... do something ...
+        callback(err, results);
 
 Connect to store and config values `redis.port`, `redis.host`, and `redis.options`:
 
@@ -90,6 +91,7 @@ connection:
             client.add(config.storageKeys.output, unseen, 'Low tide');
         }
         client.quit();
+        callback();
     });
 
 ### Testing a worker
@@ -98,24 +100,21 @@ Use `megapis/server/run-worker.js` to run a single worker.
 
 First, set up your worker:
 
-Add the worker to the `workers` array in `server/config/global.json`.  For example,
+Add the worker to the `workers` hash in `server/config/global.json`.  For example,
 
-    "workers": [
-        {
-            "id": "low_tide",
+    "workers": {
+        "workerId": {
             "name": "Half Moon Bay Low Tide",
-            "schedule": "29 19 * * *",
-            "module": "megapis-low-tide",
-            "config": "config/half_moon_bay.json"
-        },
-    ]
+            "module": "megapis-low-tide"
+        }
+    },
 
-Copy the worker's `sample_config.json` to the location in the `config` key, and 
+Copy the worker's `workerConfig.json` to `server/config/workerId.json`, and 
 edit as needed.
 
 Run the worker with `run_worker.js *worker_id*`.  For example,
 
-    ./run_worker.js low_tide
+    ./run_worker.js lowTide
 
 
 

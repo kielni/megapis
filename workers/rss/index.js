@@ -99,7 +99,7 @@ function fetchRss(config, callback) {
         });
 }
 
-RssWorker.prototype.run = function() {
+RssWorker.prototype.run = function(callback) {
     var self = this;
     this.config.excludeUrls = [];
     if (this.config.excludeKey) {
@@ -114,7 +114,7 @@ RssWorker.prototype.run = function() {
     } else {
         fetchRss(this.config, function(err, data) {
             if (!err) {
-                self.save(data);
+                self.save(data, callback);
             }
         });
     }

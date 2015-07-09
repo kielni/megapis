@@ -43,7 +43,7 @@ function getMovieDetails(movies, key, callback) {
     });
 }
 
-PrimeMoviesWorker.prototype.run = function() {
+PrimeMoviesWorker.prototype.run = function(callback) {
     log4js.configure({ appenders: [ { type: "console", layout: { type: "basic" } } ], replaceConsole: true });
     var byId = {};
     var self = this;
@@ -88,6 +88,6 @@ PrimeMoviesWorker.prototype.run = function() {
             return keep;
         });
         log.debug("found "+list.length+" movies since "+minYear);
-        self.saveAndForward(list);
+        self.saveAndForward(list, callback);
     });
 };

@@ -19,7 +19,7 @@ S3UploadWorker.prototype.getConfigKeys = function() {
     return ["bucket", "key"];
 };
 
-S3UploadWorker.prototype.run = function() {
+S3UploadWorker.prototype.run = function(callback) {
     var s3 = new AWS.S3();
     var params = {
         Bucket: this.config.bucket,
@@ -33,6 +33,7 @@ S3UploadWorker.prototype.run = function() {
         s3.putObject(params, function(err, data) {
             if (err) {
                 log.error(err);
+                callback(err);
             } else {
                 log.info("uploaded to "+params.Key);
                 params.ACL = "public-read";
@@ -41,8 +42,9 @@ S3UploadWorker.prototype.run = function() {
                     if (err) {
                         log.error("error putting ACL: ", err, err.stack);
                     } else {
-                    log.info("uploaded to "+params.Key);
+                        log.info("uploaded to "+params.Key);
                     }
+                    callback();
                 });
             }
        });

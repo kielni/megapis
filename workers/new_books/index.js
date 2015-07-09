@@ -58,7 +58,7 @@ function getAuthorResults(url, minDate, forSaleIn, callback) {
     });
 }
 
-BooksWorker.prototype.run = function() {
+BooksWorker.prototype.run = function(callback) {
     var apiUrl = "https://www.googleapis.com/books/v1/volumes?key="+this.config.apiKey;
     apiUrl += "&orderBy=newest";
     if (this.config.language) {
@@ -91,7 +91,7 @@ BooksWorker.prototype.run = function() {
         delay: 5000,
         task: function() {
             log.debug("starting save task");
-            self.saveAndForward(books);
+            self.saveAndForward(books, callback);
         }
     });
     temporal.queue(tasks);

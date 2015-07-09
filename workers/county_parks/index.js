@@ -20,7 +20,7 @@ Worker.prototype.getConfigKeys = function() {
     return ["output", "url"];
 };
 
-Worker.prototype.run = function() {
+Worker.prototype.run = function(callback) {
     var self = this;
     request(this.config.url, function(error, response, body) {
         if (error) {
@@ -56,6 +56,6 @@ Worker.prototype.run = function() {
             return a.dt - b.dt;
         });
         log.info("found "+upcoming.length+" county parks events");
-        self.saveAndForward(upcoming);
+        self.saveAndForward(upcoming, callback);
     });
 };

@@ -24,7 +24,7 @@ S3DownloadWorker.prototype.postprocessFiles = function(data) {
     return data;
 };
 
-S3DownloadWorker.prototype.run = function() {
+S3DownloadWorker.prototype.run = function(callback) {
     var s3 = new AWS.S3();
     var bucket = this.config.bucket;
     var self = this;
@@ -85,5 +85,6 @@ S3DownloadWorker.prototype.run = function() {
         }
     ], function(err, result) {
         log.info("done getting ", bucket);
+        callback();
     });
 };

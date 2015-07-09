@@ -20,28 +20,29 @@ Install and start a Redis server.  See http://redis.io/topics/quickstart for det
 
 #### from local filesystem
 
-    cd ~/my-worker
+    cd ~/my_worker
     npm link
-    cd ~/my-server
-    npm link my-worker
+    cd ~/my_server
+    npm link my_worker
 
 ### Configure server
 
     mkdir config
 
-Create a `global.json` file with an array of worker objects and redis
+Create a `global.json` file with a hash of worker objects, schedule objects, and redis
 config details:
 
     {
-        "workers": [
-        {
-            "id": "workerOne",
-            "name": "Worker #1",
-            "schedule": "0 12 * * *",
-            "module": "megapis-worker"
+        "workers": {
+            "workerOne": {
+                "name": "Worker #1",
+                "module": "megapis-worker"
+            },
+            ... other workers ...
         },
-        ... other workers ...
-        ],
+        "schedule": {
+            "0 0 6 * * *": ["workerOne", "workerTwo"]
+        }
         "redis": {
             "port": 6379,
             "host": "localhost",
@@ -50,22 +51,24 @@ config details:
         ... other config keys used by multiple workers ...
     }
 
-Each worker entry must contain:
+Each worker object is a key/value pair where key is the worker id and value contains
 
-- **id** - string identifier for worker; worker will load `config/*id*.json`
 - **name** - string describing the worker
-- **schedule** - when to run worker, in crontab format (see https://github.com/ncb000gt/node-cron)
 - **module** - package containing the worker code (must be installed)
+
+Each schedule object is a key/value pair where key is a crontab pattern and value
+is a list of worker ids to run on the specified schedule.  The workers in each 
+schedule entry will be run one after the other.
 
 ### Configure workers
 
-Copy the `config.json` file from the worker directory to `*worker_id*.json`
+Copy the `workerName.json` file from the worker directory to `*worker_id*.json`
 in the server's config directory, and edit it as needed.
 
 Example for the [low tide](wokers/low_tide/README.md) worker:
 
     {
-       "location": "Half-Moon-Bay-California",
+        "location": "Half-Moon-Bay-California",
         "output": "weeklyEmail"
        }
     }
@@ -84,5 +87,4 @@ This will validate your configuration and exit successfully.  Once it
 succeeds, run your server with
 
     node server
-
 

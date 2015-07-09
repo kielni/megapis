@@ -86,7 +86,7 @@ MandrillWorker.prototype.sendMessage = function(html) {
     });
 };
 
-MandrillWorker.prototype.run = function() {
+MandrillWorker.prototype.run = function(callback) {
     var self = this;
     var config = this.config;
     log.info("getting values for "+config.id);
@@ -97,5 +97,6 @@ MandrillWorker.prototype.run = function() {
         } else {
             log.info("nothing to send");
         }
+        callback();
     });
 };
