@@ -107,7 +107,7 @@ RssWorker.prototype.run = function(callback) {
             self.config.excludeUrls = values;
             fetchRss(self.config, function(err, data) {
                 if (!err) {
-                    self.save(data);
+                    self.save(data, callback);
                 }
             });
         });

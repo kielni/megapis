@@ -27,15 +27,12 @@ S3UploadWorker.prototype.run = function(callback) {
     };
     // get input data
     this.getAndDelete(this.config.id, function(err, values) {
-        log.debug("values=", values);
         params.Body = JSON.stringify({ "data": values });
-        log.debug("data=", params.Body);
         s3.putObject(params, function(err, data) {
             if (err) {
                 log.error(err);
                 callback(err);
             } else {
-                log.info("uploaded to "+params.Key);
                 params.ACL = "public-read";
                 delete params.Body;
                 s3.putObjectAcl(params, function(err, data) {
