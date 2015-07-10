@@ -36,21 +36,20 @@ if (config.workers.length < 1) {
 
 // validate each task
 var index = 0;
-_.each(config.workers, function(workerObj) {
-    // worker must have id, name, module, and schedule
+_.each(_.keys(config.workers), function(workerId) {
+    var workerObj = config.workers[workerId];
+    // worker must have name and module
     index += 1;
-    if (!hasKey(workerObj, "id")) {
-        process.exit(1);
-    }
     if (!hasKey(workerObj, "name")) {
         process.exit(1);
     }
-    process.stdout.write("worker "+workerObj.name+"\n");
-    if (!hasKey(workerObj, "schedule") || !hasKey(workerObj, "module")) {
+    process.stdout.write("worker "+workerId+"\t"+workerObj.name+"\n");
+    if (!hasKey(workerObj, "module")) {
         process.exit(1);
     }
     // load config file
-    process.stdout.write("\tconfig "+workerObj.id+".json ");
+    process.stdout.write("\tconfig "+workerId+".json ");
+    workerObj.id = workerId;
     var workerConfig = megapisUtil.getWorkerConfig(workerObj);
     // load code
     var worker = require(workerObj.module).createWorker(workerConfig);
@@ -59,14 +58,24 @@ _.each(config.workers, function(workerObj) {
         process.exit(1);
     }
     process.stdout.write(" ... ok\n");
+});
+_.each(_.keys(config.schedule), function(schedule) {
     // validate schedule
-    process.stdout.write("\tscchedule "+workerObj.schedule+" ");
+    process.stdout.write("schedule "+schedule+" ");
+    var workerIds = config.schedule[schedule];
     try {
-        new CronJob(workerObj.schedule, function() {});
+        new CronJob(schedule, function() {});
     } catch(ex) {
-        console.error("\ninvalid schedule "+workerObj.schedule, ex);
+        console.error("\ninvalid schedule "+schedule, ex);
         process.exit(1);
     }
-    process.stdout.write(" ... ok\n");
+    _.each(workerIds, function(wid) {
+        if (!config.workers[wid]) {
+            console.error("\ninvalid worker "+wid);
+            process.exit(1);
+        }
+    });
+    process.stdout.write("\n\t"+workerIds.length+" workers ... ok\n");
+
 });
 process.exit(0);
