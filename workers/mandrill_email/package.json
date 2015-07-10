@@ -1,6 +1,6 @@
 {
   "name": "megapis-mandrill-email",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Worker to send email",
   "main": "index.js",
   "scripts": {

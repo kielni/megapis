@@ -1,6 +1,6 @@
 {
   "name": "megapis-low-tide",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Put weekend low tides between 10a-5p on a Google calendar ",
   "main": "index.js",
   "scripts": {
