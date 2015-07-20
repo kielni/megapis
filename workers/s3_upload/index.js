@@ -25,15 +25,20 @@ S3UploadWorker.prototype.run = function(callback) {
         Bucket: this.config.bucket,
         Key: this.config.key
     };
+    var transformer = null;
+    if (this.config.transformer) {
+        transformer = require("./"+this.config.transformer);
+    }
+    var acl = this.config.acl || "public-read";
     // get input data
     this.getAndDelete(this.config.id, function(err, values) {
-        params.Body = JSON.stringify({ "data": values });
+        params.Body = transformer ? transformer.transform(values) : values;
         s3.putObject(params, function(err, data) {
             if (err) {
                 log.error(err);
                 callback(err);
             } else {
-                params.ACL = "public-read";
+                params.ACL = acl;
                 delete params.Body;
                 s3.putObjectAcl(params, function(err, data) {
                     if (err) {
