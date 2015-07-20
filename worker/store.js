@@ -58,6 +58,7 @@ exports.get = function(key, callback) {
     values is a JSON list
 */
 exports.save = function(key, values, callback) {
+    log.debug("store.stage");
     client.rename(key, getPreviousKey(key), function(err, replies) {});
     this.add(key, values, callback);
 };
@@ -69,10 +70,14 @@ exports.save = function(key, values, callback) {
 exports.add = function(key, values, callback) {
     // add each value to set
     var multi = client.multi();
-    _.each(values, function(v) {
-        //log.debug("adding to key "+key, v);
-        multi.sadd(key, JSON.stringify(v));
-    });
+    if (_.isArray(values)) {
+        _.each(values, function(v) {
+            //log.debug("adding to key "+key, v);
+            multi.sadd(key, JSON.stringify(v));
+        });
+    } else {
+        multi.sadd(key, JSON.stringify(values));
+    }
     multi.exec(function(err, replies) {
         if (replies) {
             log.debug("added ",replies.length+" values to "+key);
