@@ -33,7 +33,6 @@ function getMovieDetails(movies, key, callback) {
     {"Title":"An Unfinished Life","Year":"2005","Rated":"PG-13","Released":"16 Sep 2005","Runtime":"108 min","Genre":"Drama","Director":"Lasse Hallström","Writer":"Mark Spragg, Virginia Korus Spragg","Actors":"Robert Redford, Jennifer Lopez, Morgan Freeman, Josh Lucas","Plot":"A down on her luck woman, desperate to provide care for her daughter, moves in with her father in-law from whom she is estranged. Through time, they learn to forgive each other and heal old wounds.","Language":"English","Country":"USA, Germany","Awards":"2 wins.","Poster":"http://ia.media-imdb.com/images/M/MV5BMjc3MzE
  */
     var movie = movies[key];
-    //log.debug("get ", movie.title);
     var url = "http://www.omdbapi.com/?y=&plot=full&r=json&t="+encodeURIComponent(movie.title);
     request(url, function(err, response, body) {
         if (!err) {
@@ -75,7 +74,7 @@ PrimeMoviesWorker.prototype.run = function(callback) {
         },
         function loadDetails(movies, next) {
             log.debug("found "+_.keys(movies).length+" movies");
-            async.each(_.keys(movies), function(key, forEachCallback) {
+            async.eachSeries(_.keys(movies), function(key, forEachCallback) {
                 getMovieDetails(movies, key, forEachCallback);
             }, function(err) {
                 next(null, movies);
