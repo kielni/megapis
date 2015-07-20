@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Feed</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body class="container">
+    <h2>Feed</h2>
+    <ul class="nav nav-pills">
+      <li role="presentation" id="primeMoviesNav"><a href="#primeMovies">Prime movies</a></li>
+      <li role="presentation" id-"newBooksNav"><a href="#newBooks">Books</a></li>
+      <li role="presentation" id="countyParksNav"><a href="#countyParks">County parks</a></li>
+      <li role="presentation" id="sjLibraryEventsNav"><a href="#sjLibraryEvents">SJ Library</a></li>
+    </ul>
+
+    <div id="message">
+      <img src="ajax-loader.gif">
+    </div>
+
+    <div id="content" style="display:none">
+      <div class="row">
+        <div class="col-md-6">
+          <a name="primeMovies"></a>
+          <div id="primeMovies"></div>
+        </div>
+        <div class="col-md-6">
+          <a name="newBooks"></a>
+          <div id="newBooks"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <a name="countyParksEvents"></a>
+          <div id="countyParksEvents"></div>
+        </div>
+        <div class="col-md-6">
+          <a name="sjLibraryEvents"></a>
+          <div id="sjLibraryEvents"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.35.min.js"></script>
+    <script src="config.js"></script>
+    <script src="feed-config.js"></script>
+    <script src="feed.js"></script>
+
+  </body>
+</html>
+

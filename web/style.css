@@ -1,0 +1,31 @@
+ul {
+    padding-left: 0;
+}
+li {
+    padding-bottom: 10px;
+}
+.headline {
+    font-weight: bold;
+}
+.summary {
+    font-size: 0.9em;
+}
+.mark-read {
+    cursor: pointer;
+}
+
+.movie {
+    clear: both;
+}
+
+.movie img {
+    float: left;
+    margin-right: 15px;
+    width: 150px;
+}
+
+.movie h4 {
+  border-bottom: 1px solid #aaa;
+  padding-bottom: 5px;
+}
+
