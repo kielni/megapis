@@ -1,0 +1,29 @@
+{
+  "name": "megapis-to-html",
+  "version": "0.0.1",
+  "description": "Make HTML",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kielni/megapis"
+  },
+  "keywords": [
+    "megapis",
+    "agent"
+  ],
+  "author": "Kimberly Nicholls",
+  "license": "MIT",
+  "bugs": {
+    "url": "/issues"
+  },
+  "homepage": "https://github.com/kielni/megapis",
+  "dependencies": {
+    "handlebars": "^3.0.3",
+    "log4js": "^0.6.22",
+    "megapis-worker": "^0.1.0",
+    "moment": "^2.10.3"
+  }
+}
