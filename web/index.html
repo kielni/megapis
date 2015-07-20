@@ -4,23 +4,7 @@
     <meta charset="utf-8">
     <title>My Newspaper</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <style type="text/css">
-ul {
-    padding-left: 0;
-}
-li {
-    padding-bottom: 10px;
-}
-.headline {
-    font-weight: bold;
-}
-.summary {
-    font-size: 0.9em;
-}
-.mark-read {
-    cursor: pointer;
-}
-    </style>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body class="container">
     <h2>News <span id="date"></span></h2>
@@ -34,7 +18,9 @@ li {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.35.min.js"></script>
-    <script src="paper-config.js"></script>
+    <script src="config.js"></script>
+    <script src="config-paper.js"></script>
+    <script src="s3.js"></script>
     <script src="paper.js"></script>
 
     <script id="sourceTemplate" type="text/x-handlebars-template">
