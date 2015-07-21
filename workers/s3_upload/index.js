@@ -32,6 +32,18 @@ S3UploadWorker.prototype.run = function(callback) {
     var acl = this.config.acl || "public-read";
     // get input data
     this.getAndDelete(this.config.id, function(err, values) {
+        log.debug("found "+values.length+" values");
+        if (!values.length) {
+            s3.deleteObject(params, function(err, data) {
+                if (err) {
+                    log.error("error deleting: ", err);
+                } else {
+                    log.info("deleted "+params.Key);
+                }
+                callback();
+                return;
+            });
+        }
         params.Body = transformer ? transformer.transform(values) : values;
         s3.putObject(params, function(err, data) {
             if (err) {
