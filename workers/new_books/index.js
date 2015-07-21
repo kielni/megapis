@@ -43,6 +43,13 @@ function getAuthorResults(url, minDate, forSaleIn, callback) {
                 log.debug(title+" not for sale");
                 return;
             }
+            var isbn = null;
+            if (item.volumeInfo.industryIdentifiers) {
+                var iid = item.volumeInfo.industryIdentifiers.find(function(iid) {
+                    return iid.type === "ISBN_13";
+                });
+                isbn = iid ? iid.identifier : "";
+            }
             // seem to be duplicate entries with the same id
             books[item.id] = {
                 id: item.id,
@@ -50,7 +57,8 @@ function getAuthorResults(url, minDate, forSaleIn, callback) {
                 imageUrl: item.volumeInfo.imageLinks.smallThumbnail,
                 description: item.volumeInfo.description,
                 title: title,
-                author: item.volumeInfo.authors.join()
+                author: item.volumeInfo.authors.join(),
+                isbn: isbn
             };
         });
         var bookList = _.values(books);
