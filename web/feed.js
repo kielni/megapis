@@ -14,23 +14,29 @@ $(document).ready(function() {
             }
             $("#message").html("");
             $("#content").show();
-            data.Contents.forEach(function(obj) {
-                displayFile(obj.Key);
+            data.Contents.forEach(function(obj, index) {
+                displayFile(obj.Key, index);
             });
         }
     });
 });
 
-function displayFile(filename) {
+function displayFile(filename, index) {
     var params = {
         Bucket: config.s3Bucket,
         Key: filename
     };
-    var key = filename.replace(/\..+/, "");
     s3.getObject(params, function(err, data) {
-        $("#"+key).html(data.Body.toString());
-        $("#"+key+" .mark-read").attr("data-filename", filename);
-        $("#"+key+" .mark-read").on("click", function() {
+        var id = "#"+filename.replace(/\..+/, "");
+        $(id).html(data.Body.toString());
+        $(id+" .mark-read").attr("data-filename", filename);
+        $(id+" .mark-read").attr("data-id", id);
+        var col = "#col"+(index%2);
+        $(col).append($(id+"Container").html());
+        $(id+" .mark-read").on("click", function() {
+            var contentId = $(this).attr("data-id");
+            $(contentId).hide();
+            $(contentId+"Nav").hide();
             deleteFile($(this).attr("data-filename"));
             if ($(".source:visible").length === 0) {
                 $("#message").html("nothing to see here");

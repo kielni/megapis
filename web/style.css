@@ -14,18 +14,20 @@ li {
     cursor: pointer;
 }
 
-.movie {
+.feed-item {
     clear: both;
+    margin-bottom: 15px;
 }
 
-.movie img {
+.feed-item img {
     float: left;
     margin-right: 15px;
     width: 150px;
+    margin-bottom: 15px;
 }
 
-.movie h4 {
-  border-bottom: 1px solid #aaa;
-  padding-bottom: 5px;
+.feed-item h4 {
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 5px;
 }
 
