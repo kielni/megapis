@@ -26,13 +26,17 @@ Worker.prototype.run = function(callback) {
     var config = this.config;
     var filename = "config/"+this.config.id+".hbs";
     var template = handlebars.compile(fs.readFileSync(filename, "utf-8"));
-    //this.getAndDelete(config.id, function(err, values) {
-    this.get(config.id, function(err, values) {
+    this.getAndDelete(config.id, function(err, values) {
+    //this.get(config.id, function(err, values) {
         log.debug("found "+values.length+" values for "+config.id);
-        var html = template({
-            "values": values,
-            "createdDate": moment().format("ddd M/D h:mm a")
-        });
-        self.save([html], callback);
+        if (values.length) {
+            var html = template({
+                "values": values,
+                "createdDate": moment().format("ddd M/D h:mm a")
+            });
+            self.save([html], callback);
+        } else {
+            callback();
+        }
     });
 };
