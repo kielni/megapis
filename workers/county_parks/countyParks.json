@@ -1,4 +1,4 @@
 {
-    "output": "weeklyEmail",
+    "output": "countyParksHtml",
     "url": "http://www.sccgov.org/sites/parks/_layouts/SCCGOV/SccgovEventsCalendar.aspx?listName=PrkEvents&lformat=parks"
 }
