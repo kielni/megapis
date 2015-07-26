@@ -1,0 +1,29 @@
+{
+  "name": "megapis-sqs-receive",
+  "version": "0.0.1",
+  "description": "Get messages from an AWS SWS queue",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kielni/megapis"
+  },
+  "keywords": [
+    "megapis",
+    "agent"
+  ],
+  "author": "Kimberly Nicholls",
+  "license": "MIT",
+  "bugs": {
+    "url": "/issues"
+  },
+  "homepage": "https://github.com/kielni/megapis",
+  "dependencies": {
+    "async": "^1.4.0",
+    "aws-sdk": "^2.1.39",
+    "log4js": "^0.6.22",
+    "megapis-worker": "^0.1.0"
+  }
+}
