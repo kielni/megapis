@@ -22,11 +22,15 @@ module.exports.makeWorker = function(workerObj) {
 };
 
 module.exports.runWorker = function(workerObj, callback) {
-    var worker = this.makeWorker(workerObj);
-    if (!worker.validateConfig()) {
-        callback("error: "+workerObj.name+" invalid config");
-        return;
+    try {
+        var worker = this.makeWorker(workerObj);
+        if (!worker.validateConfig()) {
+            callback("error: "+workerObj.name+" invalid config");
+            return;
+        }
+        worker.run(callback);
+    } catch(e) {
+        log.error("error run worker "+workerObj.id+": ", e);
     }
-    worker.run(callback);
 };
 
