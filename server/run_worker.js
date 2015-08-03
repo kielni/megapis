@@ -27,5 +27,6 @@ megapisUtil.runWorker(workerObj, function(err, result) {
         log.error(err);
     }
     log.info("done "+workerObj.id);
+    process.exit(1);
 });
 
