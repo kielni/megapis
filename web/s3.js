@@ -16,3 +16,17 @@ function writeFile(urls) {
         }
     });
 }
+
+function markExclude(key) {
+    var params = {
+        QueueUrl: config.QueueUrl,
+        MessageBody: key
+    };
+    sqs.sendMessage(params, function(err, data) {
+        if (err) {
+            console.log(err, err.stack);
+        } else {
+            console.log(data);
+        }
+    });
+}

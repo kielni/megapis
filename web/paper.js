@@ -12,6 +12,7 @@ var config = {
  */
 $(document).ready(function() {
     AWS.config = config.awsConfig;
+    sqs = new AWS.SQS(config.s3Config);
     s3 = new AWS.S3(config.s3Config);
     var columns = 3;
     var source = $("#sourceTemplate").html();
@@ -38,15 +39,16 @@ $(document).ready(function() {
         });
         $("#date").html("as of "+latest.format("ddd h:mma"));
         $(".link").on("click", function() {
-            writeFile([$(this).attr('data')]);
+            $(this).closest("li").hide();
+            markExclude($(this).attr("data"));
         });
         $(".mark-read").on("click", function() {
-            var sourceId = $(this).attr('data');
+            var sourceId = $(this).attr("data");
+            $("#sourceId").hide();
             var urls = [];
             $("#"+sourceId+" li a").each(function() {
-                urls.push($(this).attr('data'));
+                markExclude($(this).attr("data"));
             });
-            writeFile(urls);
         });
     })
   .fail(function() {
