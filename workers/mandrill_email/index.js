@@ -68,7 +68,7 @@ MandrillWorker.prototype.makeMessage = function(values) {
     return template({"sources": html});
 };
 
-MandrillWorker.prototype.sendMessage = function(html) {
+MandrillWorker.prototype.sendMessage = function(html, callback) {
     var mandrillClient = new mandrill.Mandrill(this.config.mandrill.apiKey);
     // message should have subject, from_email, and to
     // see https://mandrillapp.com/api/docs/messages.nodejs.html
@@ -80,9 +80,11 @@ MandrillWorker.prototype.sendMessage = function(html) {
     };
     mandrillClient.messages.send(data, function(result) {
         log.info("sent message ", result);
+        callback();
     }, 
     function(e) {
         log.error("A mandrill error occurred: " + e.name + "" - "" + e.message);
+        callback(e.message);
     });
 };
 
@@ -93,10 +95,10 @@ MandrillWorker.prototype.run = function(callback) {
     this.getAndDelete(config.id, function(err, values) {
         var message = self.makeMessage(values);
         if (message) {
-            self.sendMessage(message);
+            self.sendMessage(message, callback);
         } else {
             log.info("nothing to send");
+            callback();
         }
-        callback();
     });
 };
