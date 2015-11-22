@@ -1,0 +1,30 @@
+{
+  "name": "megapis-rss-regex",
+  "version": "0.0.1",
+  "description": "Get list of RSS items that match a regex",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "megapis",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "homepage": "",
+  "dependencies": {
+    "async": "^1.5.0",
+    "feedparser": "^1.1.4",
+    "lodash": "^3.10.1",
+    "log4js": "^0.6.22",
+    "megapis-worker": "^0.1.0",
+    "moment": "^2.10.6",
+    "request": "^2.67.0",
+    "requests": "^0.1.7"
+  }
+}

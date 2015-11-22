@@ -1,0 +1,24 @@
+{
+    "output": "dailyEmail",
+    "feeds": [
+        "http://mylitter.com/category/amazon/feed/",
+        "http://www.thriftyandthriving.com/feed/",
+        "http://www.totallytarget.com/feed/",
+        "http://www.frugalcouponliving.com/feed/",
+        "http://feeds.feedblitz.com/feedburner/moneysavingmom",
+        "http://feeds.feedburner.com/swaggrabber",
+        "http://feeds2.feedburner.com/dealseekingmom",
+        "http://queenbeecoupons.com/feed/",
+        "http://feeds.feedblitz.com/thefrugalfind",
+        "http://www.mamacheaps.com/feed"
+    ],
+    "regexes": [
+        "Think.?Fun",
+        "Starbucks",
+        "Smart.?Games",
+        "magazine subscription",
+        "gift card",
+        "Nexus 9"
+    ],
+    "maxHoursOld": "24"
+}
