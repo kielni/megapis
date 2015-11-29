@@ -23,7 +23,7 @@ IcsRegexWorker.prototype.getConfigKeys = function() {
 IcsRegexWorker.prototype.run = function(callback) {
     var self = this;
     var regexes = this.config.regexes.map(function(re) {
-        return new RegExp(re);
+        return new RegExp(re, "im");
     });
     var exclude = this.config.exclude || false;
     ical.fromURL(this.config.source, {}, function(err, data) {

@@ -29,7 +29,7 @@ RssRegexWorker.prototype.run = function(callback) {
     var items = [];
     var minDate = moment();
     var regexes = this.config.regexes.map(function(re) {
-        return new RegExp(re);
+        return new RegExp(re, "im");
     });
     if (this.config.maxHoursOld) {
         minDate.subtract(this.config.maxHoursOld, "hours");
