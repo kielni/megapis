@@ -46,7 +46,7 @@ IcsRegexWorker.prototype.run = function(callback) {
             if ((!exclude && matches.length) || (exclude && !matches.length)) {
                 items.push({
                     title: obj.summary,
-                    link: obj.url.val,
+                    link: url,
                     dt: dt.format("MM/DD h:mma"),
                     timestamp: dt.format('X'),
                     match: matches.join(", ")
