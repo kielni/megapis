@@ -1,0 +1,14 @@
+{
+    "source": "http://calendars.morefuntocompete.com/blackfriday.ics",
+    "output": "dailyEmail",
+    "regexes": [
+        "Think.?Fun",
+        "Starbucks",
+        "Smart.?Games",
+        "magazine subscription",
+        "Nexus 9",
+        "fleece sheet",
+        "American Apparel",
+        "Vitrelle"
+    ]
+}
