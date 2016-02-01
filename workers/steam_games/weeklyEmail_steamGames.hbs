@@ -1,0 +1,21 @@
+<table style="border:1px solid #ccc; margin:10px">
+    <tr>
+        <td>
+        {{#if thumb}}
+            <img src="{{thumb}}" width="150px">
+        {{/if}}
+        </td>
+        <td valign="top">.
+            <h4><a href="{{url}}">{{title}}</a></h4>
+            <div>
+                {{players}}
+                {{genres}}
+                {{tags}}
+                {{features}}
+            </div>
+            <div>{{reviews}}</div>
+            <div>{{description}}</div>
+            <div>{{date}}</div>
+        </td>
+    </tr>
+<table>
