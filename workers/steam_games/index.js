@@ -50,7 +50,7 @@ var loadPage = function(url, callback) {
             } catch(e) {
                 console.warn("error parsing "+game.date, e);
             }
-            console.log("* adding game "+game.title);
+            console.log("\tadding "+game.title);
             games.push(game);
         });
         callback();
@@ -67,12 +67,18 @@ Worker.prototype.run = function(callback) {
     latestDate = moment();
     games = [];
     page = 1;
+    var keep = [];
+    var exclude = null;
+    if (this.config.exclude) {
+        exclude = new RegExp(this.config.exclude, 'g');
+        console.log("config.exclude="+this.config.exclude+" exclude=", exclude);
+    }
     async.waterfall([
         function getGames(next) {
             console.log("start getGames");
             async.whilst(
                 function() {
-                    console.log("minDate="+minDate.format("MMM DD YY")+" latestDate="+latestDate.format("MMM DD, YYYY"));
+                    console.log("minDate="+minDate.format("MMM DD, YYYY")+" latestDate="+latestDate.format("MMM DD, YYYY"));
                     return latestDate > minDate;
                 },
                 function(callback) {  // get page
@@ -83,7 +89,6 @@ Worker.prototype.run = function(callback) {
                     });
                 },
                 function() {
-                    console.log("whilst.3");
                     next();
                 }
             );
@@ -97,17 +102,22 @@ Worker.prototype.run = function(callback) {
                     title: ".apphub_AppName",
                     players: ".game_area_details_specs",
                     genres: [".details_block a"],
+                    linkbar: [".details_block .linkbar"],
                     description: "#game_area_description",
                     reviews: ".release_date",
                     positive: "#ReviewsTab_positive",
                     negative: "#ReviewsTab_negative",
                     tags: [".glance_tags .app_tag"],
-                    img: ".game_header_image_full@src",
                     features: [".game_area_details_specs"],
                     birthdate: "#agegate_box"
                 })(function(err, meta) {
                     if (err) {
-                        console.error("err=", err);
+                        console.error("\terror parsing "+game.url, err);
+                        if (!meta) {
+                            console.log("no meta; skipping");
+                            forEachCallback();
+                            return;
+                        }
                     }
                     //console.log("meta=", meta);
                     if (meta && meta.birthdate) {
@@ -123,7 +133,15 @@ Worker.prototype.run = function(callback) {
                             game[field] = game[field].trim().replace(/\s+/g, " ");
                         }
                     });
-                    ["genres", "tags", "features"].forEach(function (field) {
+                    // genre a tags in first .details_block have no additional class; 
+                    // link a tags in second .details_block have .linkbar
+                    game.linkbar.forEach(function(link) {
+                        game.genres = _.without(game.genres, link);
+                    });
+                    delete game.linkbar;
+                    // + button is styled like a tag
+                    game.tags = _.without(game.tags, "+");
+                    ["genres", "tags", "features"].forEach(function(field) {
                         if (game[field]) {
                             game[field] = game[field].map(function(val) {
                                 return val.trim();
@@ -131,16 +149,21 @@ Worker.prototype.run = function(callback) {
                         }
                     });
                     //console.log(game);
-                    console.log("\t"+game.date+"\t"+game.reviews);
+                    var matches = exclude ? JSON.stringify(game).match(exclude) : null;
+                    if (matches) {
+                        console.log("\tskipping: matches=", _.uniq(matches).join(", "));
+                    } else {
+                        keep.push(game);
+                        console.log("\t"+game.date+"\t"+game.reviews);
+                    }
                     forEachCallback();
                 });
             }, function() {
-                console.log("next 137");
                 next();
             });
         },
     ], function(err) {
-        console.log("got ", games.length);
-        self.saveAndForward(games, callback);
+        console.log("got ", keep.length);
+        self.saveAndForward(keep, callback);
     });
 };

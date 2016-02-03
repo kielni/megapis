@@ -6,3 +6,4 @@ Get games that are at least `config.minAge` days old and no more than `config.ma
 
 Game data: title, url, description, thumb, date, title, players, reviews, genres, positive, negative, tags, features
 
+Exclude games which match regex in `config.exclude`.

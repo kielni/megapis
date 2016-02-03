@@ -1,6 +1,7 @@
 {
     "url": "http://store.steampowered.com/search/results?sort_by=Released_DESC&category2=9",
     "minAge": "21",
-    "maxAge": "180",
-    "output": "weeklyEmail"
+    "maxAge": "28",
+    "output": "weeklyEmail",
+    "exclude": "Racing|Massively Multiplayer|Sports|Early Access|Horror"
 }
