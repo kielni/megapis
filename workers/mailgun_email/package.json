@@ -1,0 +1,29 @@
+{
+  "name": "megapis-mailgun-email",
+  "version": "0.0.1",
+  "description": "Megapis worker to send email using mailgun",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kielni/megapis"
+  },
+  "keywords": [
+    "megapis",
+    "agent"
+  ],
+  "author": "Kimberly Nicholls",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kielni/megapis/issues"
+  },
+  "homepage": "https://github.com/kielni/megapis",
+  "dependencies": {
+    "handlebars": "^4.0.5",
+    "lodash": "^4.13.1",
+    "log4js": "^0.6.22",
+    "mailgun-js": "^0.7.11",
+    "megapis-worker": "^0.1.0"
+  }
+}
