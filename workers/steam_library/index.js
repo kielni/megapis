@@ -89,6 +89,8 @@ Worker.prototype.getGames = function(callback) {
                 birthdate: '#agegate_box'
             })(function(err, meta) {
                 if (err || (meta && meta.birthdate)) {
+                    game.ageRestricted = true;
+                    library.push(game);
                     forEachCallback();
                     return;
                 }
