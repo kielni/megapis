@@ -1,0 +1,34 @@
+{
+  "name": "megapis-steam-library",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "megapis",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "/issues"
+  },
+  "homepage": "",
+  "dependencies": {
+    "async": "^1.5.2",
+    "lodash": "^4.1.0",
+    "log4js": "^0.6.22",
+    "megapis-worker": "^0.1.0",
+    "moment": "^2.11.1",
+    "request": "^2.75.0",
+    "request-promise-native": "^1.0.3",
+    "rsvp": "^3.3.3",
+    "x-ray": "^2.0.3"
+  }
+}
