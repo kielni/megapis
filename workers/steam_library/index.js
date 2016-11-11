@@ -74,14 +74,14 @@ Worker.prototype.getGames = function(callback) {
         async.forEachSeries(lookup, function(game, forEachCallback) {
             i += 1;
             console.log(i+'\t'+game.appid+'\t'+game.name);
-            game = _.omit(game, ['playtime_2weeks', 'playtime_forever', 'has_community_visible_stats']);
+            game = _.omit(game, ['playtime_2weeks', 'has_community_visible_stats']);
             game.url = 'http://store.steampowered.com/app/'+game.appid+'/';
             x(game.url, {
                 title: '.apphub_AppName',
                 players: '.game_area_details_specs',
                 genres: ['.details_block a'],
                 linkbar: ['.details_block .linkbar'],
-                description: '#game_area_description',
+                description: '#game_area_description@html',
                 positive: '#ReviewsTab_positive',
                 negative: '#ReviewsTab_negative',
                 tags: ['.glance_tags .app_tag'],
@@ -103,7 +103,7 @@ Worker.prototype.getGames = function(callback) {
                     }
                 });
                 if (game.description) {
-                    game.description = game.description.replace('About This Game ', '');
+                    game.description = game.description.replace('<h2>About This Game</h2>', '');
                 }
                 // genre a tags in first .details_block have no additional class;
                 // link a tags in second .details_block have .linkbar
